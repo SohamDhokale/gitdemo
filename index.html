@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}AaplaBazaar - Indian E-Commerce Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Slider -->
+<div class="hero-slider swiper">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide hero-slide" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.pexels.com/photos/6069544/pexels-photo-6069544.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080') center/cover;">
+            <div class="slide-content">
+                <h1 class="slide-title">Discover Authentic Indian Products</h1>
+                <p class="slide-subtitle">Handcrafted with pride and tradition, our collection brings the best of India to your doorstep.</p>
+                <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">Shop Now</a>
+            </div>
+        </div>
+        <div class="swiper-slide hero-slide" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.pexels.com/photos/2614942/pexels-photo-2614942.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080') center/cover;">
+            <div class="slide-content">
+                <h1 class="slide-title">GI Tagged Products of India</h1>
+                <p class="slide-subtitle">Explore our exclusive collection of GI tagged products that represent India's rich heritage.</p>
+                <a href="{{ url_for('gi_tagged_products') }}" class="btn btn-primary btn-lg">Explore GI Products</a>
+            </div>
+        </div>
+        <div class="swiper-slide hero-slide" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.pexels.com/photos/11712845/pexels-photo-11712845.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080') center/cover;">
+            <div class="slide-content">
+                <h1 class="slide-title">Festival Season Sale</h1>
+                <p class="slide-subtitle">Celebrate the spirit of Indian festivals with our special collection. Get up to 30% off!</p>
+                <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">Shop Sale</a>
+            </div>
+        </div>
+    </div>
+    <div class="swiper-pagination"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+</div>
+
+<!-- Featured Categories -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title">Shop by Category</h2>
+        <div class="row g-4">
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="{{ url_for('products') }}?category=clothing" class="category-card d-block">
+                    <div class="card h-100">
+                        <div class="card-body text-center p-4" style="background-color: #fff8f0;">
+                            <i class="fas fa-tshirt fa-3x mb-3" style="color: #FF8A00;"></i>
+                            <h5 class="card-title mb-0">Clothing</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="{{ url_for('products') }}?category=handicrafts" class="category-card d-block">
+                    <div class="card h-100">
+                        <div class="card-body text-center p-4" style="background-color: #f0f8ff;">
+                            <i class="fas fa-paint-brush fa-3x mb-3" style="color: #147B45;"></i>
+                            <h5 class="card-title mb-0">Handicrafts</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="{{ url_for('products') }}?category=jewelry" class="category-card d-block">
+                    <div class="card h-100">
+                        <div class="card-body text-center p-4" style="background-color: #fff0f5;">
+                            <i class="fas fa-gem fa-3x mb-3" style="color: #C42B1C;"></i>
+                            <h5 class="card-title mb-0">Jewelry</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="{{ url_for('products') }}?category=spices" class="category-card d-block">
+                    <div class="card h-100">
+                        <div class="card-body text-center p-4" style="background-color: #fffacd;">
+                            <i class="fas fa-mortar-pestle fa-3x mb-3" style="color: #8C3B0C;"></i>
+                            <h5 class="card-title mb-0">Spices</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="{{ url_for('products') }}?category=home_decor" class="category-card d-block">
+                    <div class="card h-100">
+                        <div class="card-body text-center p-4" style="background-color: #f0fff0;">
+                            <i class="fas fa-home fa-3x mb-3" style="color: #147B45;"></i>
+                            <h5 class="card-title mb-0">Home Decor</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="{{ url_for('products') }}?category=food_products" class="category-card d-block">
+                    <div class="card h-100">
+                        <div class="card-body text-center p-4" style="background-color: #fff0f0;">
+                            <i class="fas fa-utensils fa-3x mb-3" style="color: #FF8A00;"></i>
+                            <h5 class="card-title mb-0">Food Products</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="{{ url_for('products') }}?category=beauty" class="category-card d-block">
+                    <div class="card h-100">
+                        <div class="card-body text-center p-4" style="background-color: #f5f0ff;">
+                            <i class="fas fa-spa fa-3x mb-3" style="color: #C42B1C;"></i>
+                            <h5 class="card-title mb-0">Beauty & Wellness</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="{{ url_for('products') }}" class="category-card d-block">
+                    <div class="card h-100">
+                        <div class="card-body text-center p-4" style="background-color: #f0f0f0;">
+                            <i class="fas fa-th-large fa-3x mb-3" style="color: #8C3B0C;"></i>
+                            <h5 class="card-title mb-0">View All</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title">Featured Products</h2>
+        <div class="product-grid">
+            {% for product in featured_products %}
+            <div class="product-card">
+                <div class="product-image">
+                    <a href="{{ url_for('product_detail', id=product.id) }}">
+                        <img src="{{ product.image_url1 }}" alt="{{ product.name }}">
+                    </a>
+                    <div class="product-wishlist">
+                        {% if current_user.is_authenticated %}
+                        <form class="add-to-wishlist-form" action="{{ url_for('add_to_wishlist', product_id=product.id) }}" method="post" style="display: none;">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                        </form>
+                        <button type="button" class="wishlist-btn" data-product-id="{{ product.id }}">
+                            {% if product in current_user.wishlist_items|map(attribute='product')|list %}
+                            <i class="fas fa-heart"></i>
+                            {% else %}
+                            <i class="far fa-heart"></i>
+                            {% endif %}
+                        </button>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="wishlist-btn">
+                            <i class="far fa-heart"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="product-details">
+                    <div class="product-category">{{ product.category|capitalize }}</div>
+                    <h3 class="product-title">
+                        <a href="{{ url_for('product_detail', id=product.id) }}">{{ product.name }}</a>
+                    </h3>
+                    <div class="product-price">
+                        <span class="current-price">₹{{ product.price }}</span>
+                        {% if product.discount_price %}
+                        <span class="original-price">₹{{ product.discount_price }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="product-actions">
+                        {% if current_user.is_authenticated %}
+                        <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-primary add-to-cart">Add to Cart</button>
+                        </form>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary add-to-cart">Add to Cart</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('products') }}" class="btn btn-outline-primary btn-lg">View All Products</a>
+        </div>
+    </div>
+</section>
+
+<!-- GI Tagged Products -->
+<section class="gi-tagged-section py-5">
+    <div class="container">
+        <h2 class="section-title">GI Tagged Products of India</h2>
+        <p class="text-center mb-4">Geographical Indication (GI) tagged products represent the uniqueness and authenticity of India's diverse heritage.</p>
+        
+        <div class="row">
+            {% for product in gi_tagged_products %}
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="product-card">
+                    <div class="product-image">
+                        <a href="{{ url_for('product_detail', id=product.id) }}">
+                            <img src="{{ product.image_url1 }}" alt="{{ product.name }}">
+                        </a>
+                        <div class="product-wishlist">
+                            {% if current_user.is_authenticated %}
+                            <form class="add-to-wishlist-form" action="{{ url_for('add_to_wishlist', product_id=product.id) }}" method="post" style="display: none;">
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                            </form>
+                            <button type="button" class="wishlist-btn" data-product-id="{{ product.id }}">
+                                {% if product in current_user.wishlist_items|map(attribute='product')|list %}
+                                <i class="fas fa-heart"></i>
+                                {% else %}
+                                <i class="far fa-heart"></i>
+                                {% endif %}
+                            </button>
+                            {% else %}
+                            <a href="{{ url_for('login') }}" class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="product-details">
+                        <span class="gi-badge">GI Tagged</span>
+                        <div class="product-category">{{ product.origin }}</div>
+                        <h3 class="product-title">
+                            <a href="{{ url_for('product_detail', id=product.id) }}">{{ product.name }}</a>
+                        </h3>
+                        <div class="product-price">
+                            <span class="current-price">₹{{ product.price }}</span>
+                            {% if product.discount_price %}
+                            <span class="original-price">₹{{ product.discount_price }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-actions">
+                            {% if current_user.is_authenticated %}
+                            <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-primary add-to-cart">Add to Cart</button>
+                            </form>
+                            {% else %}
+                            <a href="{{ url_for('login') }}" class="btn btn-primary add-to-cart">Add to Cart</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('gi_tagged_products') }}" class="btn btn-outline-primary btn-lg">View All GI Products</a>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="feature text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-truck fa-3x" style="color: #FF8A00;"></i>
+                    </div>
+                    <h4>Free Shipping</h4>
+                    <p>On orders over ₹599</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-undo fa-3x" style="color: #147B45;"></i>
+                    </div>
+                    <h4>Easy Returns</h4>
+                    <p>7-day return policy</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-shield-alt fa-3x" style="color: #C42B1C;"></i>
+                    </div>
+                    <h4>Secure Payments</h4>
+                    <p>100% secure checkout</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-headset fa-3x" style="color: #8C3B0C;"></i>
+                    </div>
+                    <h4>24/7 Support</h4>
+                    <p>Dedicated customer service</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="mb-3">Subscribe to Our Newsletter</h2>
+                <p>Stay updated with the latest products, exclusive offers, and Indian cultural insights.</p>
+            </div>
+            <div class="col-lg-6">
+                <form class="d-flex">
+                    <input type="email" class="form-control me-2" placeholder="Your Email Address">
+                    <button type="submit" class="btn btn-light">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
