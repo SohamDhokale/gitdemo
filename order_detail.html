@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Order #{{ order.id }} Details - AaplaBazaar{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="admin-container">
+            <!-- Admin Sidebar -->
+            <div class="admin-sidebar">
+                <h3 class="mb-4">Admin Panel</h3>
+                <ul class="admin-menu">
+                    <li class="admin-menu-item">
+                        <a href="{{ url_for('admin_dashboard') }}" class="admin-menu-link">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="admin-menu-item">
+                        <a href="{{ url_for('admin_products') }}" class="admin-menu-link">
+                            <i class="fas fa-box"></i> Products
+                        </a>
+                    </li>
+                    <li class="admin-menu-item">
+                        <a href="{{ url_for('admin_orders') }}" class="admin-menu-link active">
+                            <i class="fas fa-shopping-cart"></i> Orders
+                        </a>
+                    </li>
+                    <li class="admin-menu-item">
+                        <a href="{{ url_for('index') }}" class="admin-menu-link">
+                            <i class="fas fa-store"></i> View Store
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Admin Main Content -->
+            <div class="admin-main">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="admin-title mb-0">Order #{{ order.id }}</h2>
+                    <a href="{{ url_for('admin_orders') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Orders
+                    </a>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <!-- Order Details -->
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4 class="mb-0">Order Details</h4>
+                                <span class="badge bg-{% if order.status == 'Pending' %}warning text-dark{% elif order.status == 'Processing' %}info text-dark{% elif order.status == 'Shipped' %}primary{% elif order.status == 'Delivered' %}success{% elif order.status == 'Cancelled' %}danger{% else %}secondary{% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Order Date:</div>
+                                    <div class="col-md-8">{{ order.order_date.strftime('%d %B, %Y at %I:%M %p') }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Customer:</div>
+                                    <div class="col-md-8">{{ user.username }} ({{ user.email }})</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Phone:</div>
+                                    <div class="col-md-8">{{ user.phone }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Total Amount:</div>
+                                    <div class="col-md-8">₹{{ order.total_amount }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Payment Status:</div>
+                                    <div class="col-md-8">
+                                        <span class="badge bg-{% if order.payment_status == 'Completed' %}success{% elif order.payment_status == 'Pending' %}warning text-dark{% elif order.payment_status == 'Failed' %}danger{% else %}secondary{% endif %}">
+                                            {{ order.payment_status }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Payment ID:</div>
+                                    <div class="col-md-8">{{ order.payment_id or 'N/A' }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Tracking Number:</div>
+                                    <div class="col-md-8">{{ order.tracking_number or 'Not assigned yet' }}</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4 fw-bold">Estimated Delivery:</div>
+                                    <div class="col-md-8">{{ order.estimated_delivery.strftime('%d %B, %Y') if order.estimated_delivery else 'Not available' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Shipping Information -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4 class="mb-0">Shipping Information</h4>
+                            </div>
+                            <div class="card-body">
+                                <address>
+                                    <strong>{{ user.username }}</strong><br>
+                                    {{ order.shipping_address }}<br>
+                                    {{ order.shipping_city }}, {{ order.shipping_state }}<br>
+                                    PIN: {{ order.shipping_pincode }}<br>
+                                    <abbr title="Phone">P:</abbr> {{ user.phone }}
+                                </address>
+                            </div>
+                        </div>
+                        
+                        <!-- Order Items -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4 class="mb-0">Order Items</h4>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th class="text-center">Price</th>
+                                                <th class="text-center">Quantity</th>
+                                                <th class="text-end">Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in order.items %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="{{ item.product.image_url1 }}" alt="{{ item.product.name }}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                                        <a href="{{ url_for('product_detail', id=item.product.id) }}" target="_blank">{{ item.product.name }}</a>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">₹{{ item.price }}</td>
+                                                <td class="text-center">{{ item.quantity }}</td>
+                                                <td class="text-end">₹{{ item.price * item.quantity }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="3" class="text-end">Total:</th>
+                                                <th class="text-end">₹{{ order.total_amount }}</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <!-- Update Order Status -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h4 class="mb-0">Update Order Status</h4>
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ url_for('admin_update_order', order_id=order.id) }}" method="post">
+                                    <div class="form-group mb-3">
+                                        <label for="status" class="form-label">Status</label>
+                                        <select name="status" id="status" class="form-select">
+                                            <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                            <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                                            <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                            <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                            <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary">Update Status</button>
+                                    </div>
+                                    <small class="form-text text-muted mt-2">
+                                        <i class="fas fa-info-circle me-1"></i> Updating the status will send an SMS notification to the customer.
+                                    </small>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Tracking Information -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="mb-0">Tracking Timeline</h4>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="tracking-timeline p-3">
+                                    {% for update in tracking_updates %}
+                                    <div class="tracking-step {% if loop.first %}current{% elif loop.index0 < tracking_updates|length - 2 %}completed{% endif %}">
+                                        <div class="tracking-step-title">{{ update.status }}</div>
+                                        <div class="tracking-step-time">{{ update.timestamp.strftime('%d %b, %Y at %I:%M %p') }}</div>
+                                        <div class="tracking-step-description">{{ update.description }}</div>
+                                        {% if update.location %}
+                                        <div class="tracking-step-location">
+                                            <i class="fas fa-map-marker-alt"></i> {{ update.location }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% else %}
+                                    <div class="text-center py-3">
+                                        <p>No tracking updates available.</p>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

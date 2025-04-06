@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}{% if product %}Edit{% else %}Add{% endif %} Product - AaplaBazaar{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="admin-container">
+            <!-- Admin Sidebar -->
+            <div class="admin-sidebar">
+                <h3 class="mb-4">Admin Panel</h3>
+                <ul class="admin-menu">
+                    <li class="admin-menu-item">
+                        <a href="{{ url_for('admin_dashboard') }}" class="admin-menu-link">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="admin-menu-item">
+                        <a href="{{ url_for('admin_products') }}" class="admin-menu-link active">
+                            <i class="fas fa-box"></i> Products
+                        </a>
+                    </li>
+                    <li class="admin-menu-item">
+                        <a href="{{ url_for('admin_orders') }}" class="admin-menu-link">
+                            <i class="fas fa-shopping-cart"></i> Orders
+                        </a>
+                    </li>
+                    <li class="admin-menu-item">
+                        <a href="{{ url_for('index') }}" class="admin-menu-link">
+                            <i class="fas fa-store"></i> View Store
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Admin Main Content -->
+            <div class="admin-main">
+                <h2 class="admin-title">{% if product %}Edit{% else %}Add New{% endif %} Product</h2>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post" action="{% if product %}{{ url_for('admin_edit_product', product_id=product.id) }}{% else %}{{ url_for('admin_add_product') }}{% endif %}">
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        {{ form.name.label(class="form-label") }}
+                                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), placeholder="Product name") }}
+                                        {% for error in form.name.errors %}
+                                        <div class="invalid-feedback">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        {{ form.category.label(class="form-label") }}
+                                        {{ form.category(class="form-select" + (" is-invalid" if form.category.errors else "")) }}
+                                        {% for error in form.category.errors %}
+                                        <div class="invalid-feedback">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                {{ form.description.label(class="form-label") }}
+                                {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), placeholder="Product description", rows=5) }}
+                                {% for error in form.description.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        {{ form.price.label(class="form-label") }}
+                                        {{ form.price(class="form-control" + (" is-invalid" if form.price.errors else ""), placeholder="Regular price") }}
+                                        {% for error in form.price.errors %}
+                                        <div class="invalid-feedback">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        {{ form.discount_price.label(class="form-label") }}
+                                        {{ form.discount_price(class="form-control" + (" is-invalid" if form.discount_price.errors else ""), placeholder="Discount price (optional)") }}
+                                        {% for error in form.discount_price.errors %}
+                                        <div class="invalid-feedback">{{ error }}</div>
+                                        {% endfor %}
+                                        <small class="form-text text-muted">Leave empty if no discount</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        {{ form.stock.label(class="form-label") }}
+                                        {{ form.stock(class="form-control" + (" is-invalid" if form.stock.errors else ""), placeholder="Available quantity") }}
+                                        {% for error in form.stock.errors %}
+                                        <div class="invalid-feedback">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h4 class="mt-4 mb-3">Product Images</h4>
+                            <div class="form-group mb-3">
+                                {{ form.image_url1.label(class="form-label") }}
+                                {{ form.image_url1(class="form-control" + (" is-invalid" if form.image_url1.errors else ""), placeholder="URL for main product image") }}
+                                {% for error in form.image_url1.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                                <small class="form-text text-muted">Enter a valid URL for the product main image</small>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        {{ form.image_url2.label(class="form-label") }}
+                                        {{ form.image_url2(class="form-control" + (" is-invalid" if form.image_url2.errors else ""), placeholder="URL for additional image (optional)") }}
+                                        {% for error in form.image_url2.errors %}
+                                        <div class="invalid-feedback">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        {{ form.image_url3.label(class="form-label") }}
+                                        {{ form.image_url3(class="form-control" + (" is-invalid" if form.image_url3.errors else ""), placeholder="URL for additional image (optional)") }}
+                                        {% for error in form.image_url3.errors %}
+                                        <div class="invalid-feedback">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h4 class="mt-4 mb-3">Additional Information</h4>
+                            <div class="form-check mb-3">
+                                {{ form.is_featured(class="form-check-input" + (" is-invalid" if form.is_featured.errors else "")) }}
+                                {{ form.is_featured.label(class="form-check-label") }}
+                                {% for error in form.is_featured.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                {{ form.is_gi_tagged(class="form-check-input" + (" is-invalid" if form.is_gi_tagged.errors else ""), id="is_gi_tagged") }}
+                                {{ form.is_gi_tagged.label(class="form-check-label") }}
+                                {% for error in form.is_gi_tagged.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div id="gi_tag_details_container" class="mb-3" {% if not form.is_gi_tagged.data %}style="display: none;"{% endif %}>
+                                <div class="form-group mb-3">
+                                    {{ form.gi_tag_details.label(class="form-label") }}
+                                    {{ form.gi_tag_details(class="form-control" + (" is-invalid" if form.gi_tag_details.errors else ""), placeholder="Details about the GI tag of this product", rows=3) }}
+                                    {% for error in form.gi_tag_details.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    {{ form.origin.label(class="form-label") }}
+                                    {{ form.origin(class="form-control" + (" is-invalid" if form.origin.errors else ""), placeholder="Region or state of origin") }}
+                                    {% for error in form.origin.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex mt-4">
+                                {{ form.submit(class="btn btn-primary me-2") }}
+                                <a href="{{ url_for('admin_products') }}" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const isGiTaggedCheckbox = document.getElementById('is_gi_tagged');
+        const giTagDetailsContainer = document.getElementById('gi_tag_details_container');
+        
+        if (isGiTaggedCheckbox && giTagDetailsContainer) {
+            isGiTaggedCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    giTagDetailsContainer.style.display = 'block';
+                } else {
+                    giTagDetailsContainer.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}
