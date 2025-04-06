@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Track Order #{{ order.id }} - AaplaBazaar{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="section-title">Track Your Order</h1>
+        
+        <div class="tracking-container">
+            <div class="tracking-header">
+                <div>
+                    <div class="tracking-id">Order #{{ order.id }}</div>
+                    <div class="text-muted">Tracking Number: {{ order.tracking_number }}</div>
+                </div>
+                <div class="tracking-status {{ order.status.lower() }}">{{ order.status }}</div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h4>Shipping Address</h4>
+                    <p>{{ order.shipping_address }}<br>
+                    {{ order.shipping_city }}, {{ order.shipping_state }} - {{ order.shipping_pincode }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h4>Order Information</h4>
+                    <p><strong>Order Date:</strong> {{ order.order_date.strftime('%d %B, %Y') }}</p>
+                    <p><strong>Estimated Delivery:</strong> {{ order.estimated_delivery.strftime('%d %B, %Y') if order.estimated_delivery else 'To be determined' }}</p>
+                    <p><strong>Total Amount:</strong> ₹{{ order.total_amount }}</p>
+                </div>
+            </div>
+            
+            <h4 class="mb-3">Tracking Timeline</h4>
+            <div class="tracking-timeline">
+                {% for update in tracking_updates %}
+                <div class="tracking-step {% if loop.first %}current{% elif loop.index0 < tracking_updates|length - 2 %}completed{% endif %}">
+                    <div class="tracking-step-title">{{ update.status }}</div>
+                    <div class="tracking-step-time">{{ update.timestamp.strftime('%d %b, %Y at %I:%M %p') }}</div>
+                    <div class="tracking-step-description">{{ update.description }}</div>
+                    {% if update.location %}
+                    <div class="tracking-step-location">
+                        <i class="fas fa-map-marker-alt"></i> {{ update.location }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="tracking-step current">
+                    <div class="tracking-step-title">Order Received</div>
+                    <div class="tracking-step-time">{{ order.order_date.strftime('%d %b, %Y at %I:%M %p') }}</div>
+                    <div class="tracking-step-description">Your order has been received and is being processed.</div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="mt-4">
+                <h4>Order Items</h4>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('product_detail', id=item.product.id) }}">{{ item.product.name }}</a>
+                                </td>
+                                <td>{{ item.quantity }}</td>
+                                <td>₹{{ item.price * item.quantity }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="{{ url_for('orders') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Orders
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

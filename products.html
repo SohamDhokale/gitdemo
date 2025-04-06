@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Products - AaplaBazaar{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="section-title">Our Products</h1>
+        
+        <!-- Search and Filters -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <form action="{{ url_for('products') }}" method="get" class="d-flex">
+                    <input type="text" name="search" class="form-control me-2" placeholder="Search products..." value="{{ search }}">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex justify-content-end">
+                    <select class="form-select me-2" id="categoryFilter" onchange="window.location.href=this.value">
+                        <option value="{{ url_for('products') }}?sort={{ current_sort }}" {% if not current_category %}selected{% endif %}>All Categories</option>
+                        {% for category in categories %}
+                        <option value="{{ url_for('products') }}?category={{ category }}&sort={{ current_sort }}" {% if current_category == category %}selected{% endif %}>{{ category|capitalize }}</option>
+                        {% endfor %}
+                    </select>
+                    <select class="form-select" id="sortFilter" onchange="window.location.href=this.value">
+                        <option value="{{ url_for('products') }}?category={{ current_category }}&sort=newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest</option>
+                        <option value="{{ url_for('products') }}?category={{ current_category }}&sort=price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="{{ url_for('products') }}?category={{ current_category }}&sort=price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Products Grid -->
+        <div class="product-grid">
+            {% for product in products.items %}
+            <div class="product-card">
+                <div class="product-image">
+                    <a href="{{ url_for('product_detail', id=product.id) }}">
+                        <img src="{{ product.image_url1 }}" alt="{{ product.name }}">
+                    </a>
+                    <div class="product-wishlist">
+                        {% if current_user.is_authenticated %}
+                        <form class="add-to-wishlist-form" action="{{ url_for('add_to_wishlist', product_id=product.id) }}" method="post" style="display: none;">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                        </form>
+                        <button type="button" class="wishlist-btn" data-product-id="{{ product.id }}">
+                            {% if product in current_user.wishlist_items|map(attribute='product')|list %}
+                            <i class="fas fa-heart"></i>
+                            {% else %}
+                            <i class="far fa-heart"></i>
+                            {% endif %}
+                        </button>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="wishlist-btn">
+                            <i class="far fa-heart"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="product-details">
+                    <div class="product-category">{{ product.category|capitalize }}</div>
+                    <h3 class="product-title">
+                        <a href="{{ url_for('product_detail', id=product.id) }}">{{ product.name }}</a>
+                    </h3>
+                    <div class="product-price">
+                        <span class="current-price">₹{{ product.price }}</span>
+                        {% if product.discount_price %}
+                        <span class="original-price">₹{{ product.discount_price }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="product-actions">
+                        {% if current_user.is_authenticated %}
+                        <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-primary add-to-cart">Add to Cart</button>
+                        </form>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary add-to-cart">Add to Cart</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-search fa-3x mb-3"></i>
+                <h3>No products found</h3>
+                <p>We couldn't find any products matching your criteria.</p>
+                <a href="{{ url_for('products') }}" class="btn btn-primary mt-3">View All Products</a>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if products.pages > 1 %}
+        <nav aria-label="Product pagination" class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if products.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('products', page=products.prev_num, category=current_category, sort=current_sort, search=search) }}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+                {% endif %}
+                
+                {% for page_num in products.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                {% if page_num == products.page %}
+                <li class="page-item active">
+                    <span class="page-link">{{ page_num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('products', page=page_num, category=current_category, sort=current_sort, search=search) }}">{{ page_num }}</a>
+                </li>
+                {% endif %}
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">…</span>
+                </li>
+                {% endif %}
+                {% endfor %}
+                
+                {% if products.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('products', page=products.next_num, category=current_category, sort=current_sort, search=search) }}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Your Profile - AaplaBazaar{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="profile-container">
+            <!-- Profile Sidebar -->
+            <div class="profile-sidebar">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 class="profile-username">{{ current_user.username }}</h3>
+                
+                <ul class="profile-menu">
+                    <li class="profile-menu-item">
+                        <a href="{{ url_for('profile') }}" class="profile-menu-link active">
+                            <i class="fas fa-user"></i> My Profile
+                        </a>
+                    </li>
+                    <li class="profile-menu-item">
+                        <a href="{{ url_for('orders') }}" class="profile-menu-link">
+                            <i class="fas fa-shopping-bag"></i> My Orders
+                        </a>
+                    </li>
+                    <li class="profile-menu-item">
+                        <a href="{{ url_for('wishlist') }}" class="profile-menu-link">
+                            <i class="fas fa-heart"></i> My Wishlist
+                        </a>
+                    </li>
+                    <li class="profile-menu-item">
+                        <a href="{{ url_for('update_profile') }}" class="profile-menu-link">
+                            <i class="fas fa-cog"></i> Edit Profile
+                        </a>
+                    </li>
+                    <li class="profile-menu-item">
+                        <a href="{{ url_for('logout') }}" class="profile-menu-link">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Profile Main Content -->
+            <div class="profile-main">
+                <h2>Account Information</h2>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h4>Personal Details</h4>
+                        <table class="table">
+                            <tr>
+                                <th>Username:</th>
+                                <td>{{ current_user.username }}</td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td>{{ current_user.email }}</td>
+                            </tr>
+                            <tr>
+                                <th>Phone:</th>
+                                <td>{{ current_user.phone }}</td>
+                            </tr>
+                            <tr>
+                                <th>Joined On:</th>
+                                <td>{{ current_user.created_at.strftime('%d %B, %Y') }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h4>Address Information</h4>
+                        {% if current_user.address %}
+                        <p>{{ current_user.address }}</p>
+                        <p>{{ current_user.city }}, {{ current_user.state }}</p>
+                        <p>PIN: {{ current_user.pincode }}</p>
+                        {% else %}
+                        <p>No address information saved.</p>
+                        {% endif %}
+                        
+                        <a href="{{ url_for('update_profile') }}" class="btn btn-primary mt-3">
+                            <i class="fas fa-edit me-2"></i> Update Profile
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="activity-section mt-5">
+                    <h3>Recent Activity</h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-shopping-bag me-2"></i> Recent Orders
+                                    </h5>
+                                    {% if current_user.orders %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for order in current_user.orders[:3] %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <a href="{{ url_for('track_order', order_id=order.id) }}">#{{ order.id }}</a>
+                                                <small class="text-muted d-block">{{ order.order_date.strftime('%d %b, %Y') }}</small>
+                                            </div>
+                                            <span class="badge bg-primary rounded-pill">₹{{ order.total_amount }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <a href="{{ url_for('orders') }}" class="btn btn-outline-primary btn-sm mt-3">View All Orders</a>
+                                    {% else %}
+                                    <p class="card-text">You haven't placed any orders yet.</p>
+                                    <a href="{{ url_for('products') }}" class="btn btn-outline-primary btn-sm">Start Shopping</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-heart me-2"></i> Wishlist
+                                    </h5>
+                                    {% if current_user.wishlist_items %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for item in current_user.wishlist_items[:3] %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <a href="{{ url_for('product_detail', id=item.product.id) }}">{{ item.product.name }}</a>
+                                                <small class="text-muted d-block">Added on {{ item.added_at.strftime('%d %b, %Y') }}</small>
+                                            </div>
+                                            <span class="badge bg-primary rounded-pill">₹{{ item.product.price }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <a href="{{ url_for('wishlist') }}" class="btn btn-outline-primary btn-sm mt-3">View Wishlist</a>
+                                    {% else %}
+                                    <p class="card-text">Your wishlist is empty.</p>
+                                    <a href="{{ url_for('products') }}" class="btn btn-outline-primary btn-sm">Browse Products</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - AaplaBazaar{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="section-title">Checkout</h1>
+        
+        <div class="checkout-container">
+            <div class="checkout-form">
+                <h3 class="mb-4">Shipping Details</h3>
+                
+                <form method="post" action="{{ url_for('checkout') }}" id="checkout-form">
+                    {{ form.hidden_tag() }}
+                    
+                    {% if current_user.address %}
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="use-profile-address" 
+                               data-address="{{ current_user.address }}"
+                               data-city="{{ current_user.city }}"
+                               data-state="{{ current_user.state }}"
+                               data-pincode="{{ current_user.pincode }}">
+                        <label class="form-check-label" for="use-profile-address">
+                            Use my profile address
+                        </label>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="form-group mb-3">
+                        {{ form.shipping_address.label(class="form-label") }}
+                        {{ form.shipping_address(class="form-control" + (" is-invalid" if form.shipping_address.errors else ""), placeholder="Enter your complete shipping address", rows=3) }}
+                        {% for error in form.shipping_address.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                {{ form.shipping_city.label(class="form-label") }}
+                                {{ form.shipping_city(class="form-control" + (" is-invalid" if form.shipping_city.errors else ""), placeholder="City") }}
+                                {% for error in form.shipping_city.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                {{ form.shipping_state.label(class="form-label") }}
+                                {{ form.shipping_state(class="form-control" + (" is-invalid" if form.shipping_state.errors else ""), placeholder="State") }}
+                                {% for error in form.shipping_state.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                {{ form.shipping_pincode.label(class="form-label") }}
+                                {{ form.shipping_pincode(class="form-control" + (" is-invalid" if form.shipping_pincode.errors else ""), placeholder="PIN Code") }}
+                                {% for error in form.shipping_pincode.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="mt-4 mb-3">Payment Method</h3>
+                    
+                    <div class="form-group mb-4">
+                        {{ form.payment_method.label(class="form-label") }}
+                        {{ form.payment_method(class="form-select" + (" is-invalid" if form.payment_method.errors else "")) }}
+                        {% for error in form.payment_method.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="payment-info bg-light p-3 rounded mb-4">
+                        <h5 class="mb-3">Cash On Delivery Information</h5>
+                        <p>You will pay for your order when it is delivered to your address.</p>
+                        <p class="mb-0"><i class="fas fa-truck me-2"></i> SMS notifications will be sent to your registered phone number for order tracking.</p>
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+            </div>
+            
+            <div class="checkout-summary">
+                <h3 class="mb-4">Order Summary</h3>
+                
+                <div class="checkout-items">
+                    {% for item in cart_items %}
+                    <div class="checkout-item">
+                        <div>
+                            <strong>{{ item.quantity }}x</strong> {{ item.product.name }}
+                        </div>
+                        <div>₹{{ item.product.price * item.quantity }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="checkout-total">
+                    <span>Total:</span>
+                    <span>₹{{ total }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+
+{% endblock %}
+{% endblock %}

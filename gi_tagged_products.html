@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}GI Tagged Products - AaplaBazaar{% endblock %}
+
+{% block content %}
+<section class="py-5 gi-tagged-section">
+    <div class="container">
+        <h1 class="section-title">Geographical Indication (GI) Tagged Products</h1>
+        
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-10">
+                <div class="gi-info p-4 bg-white rounded shadow-sm">
+                    <h3>What is a GI Tag?</h3>
+                    <p>A Geographical Indication (GI) is a sign used on products that have a specific geographical origin and possess qualities, reputation, or characteristics that are essentially attributable to that place of origin.</p>
+                    <p>India, with its rich and diverse culture, has many products that are unique to certain regions. The GI tag protects these products, ensures their authenticity, and helps preserve traditional knowledge and skills.</p>
+                    <div class="text-center">
+                        <img src="https://siddhast.com/wp-content/uploads/2019/06/Capture.png" alt="GI Tag Logo" class="my-3" style="height: 100px;">
+                    </div>
+                    <p class="mb-0">Explore our collection of authentic GI tagged products from various regions of India and support local artisans and communities.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    <a href="{{ url_for('product_detail', id=product.id) }}">
+                        <img src="{{ product.image_url1 }}" alt="{{ product.name }}">
+                    </a>
+                    <div class="product-wishlist">
+                        {% if current_user.is_authenticated %}
+                        <form class="add-to-wishlist-form" action="{{ url_for('add_to_wishlist', product_id=product.id) }}" method="post" style="display: none;">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                        </form>
+                        <button type="button" class="wishlist-btn" data-product-id="{{ product.id }}">
+                            {% if product in current_user.wishlist_items|map(attribute='product')|list %}
+                            <i class="fas fa-heart"></i>
+                            {% else %}
+                            <i class="far fa-heart"></i>
+                            {% endif %}
+                        </button>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="wishlist-btn">
+                            <i class="far fa-heart"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="product-details">
+                    <span class="gi-badge">GI Tagged</span>
+                    <div class="product-category">{{ product.origin }}</div>
+                    <h3 class="product-title">
+                        <a href="{{ url_for('product_detail', id=product.id) }}">{{ product.name }}</a>
+                    </h3>
+                    <div class="product-price">
+                        <span class="current-price">₹{{ product.price }}</span>
+                        {% if product.discount_price %}
+                        <span class="original-price">₹{{ product.discount_price }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="product-actions">
+                        {% if current_user.is_authenticated %}
+                        <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-primary add-to-cart">Add to Cart</button>
+                        </form>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary add-to-cart">Add to Cart</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-exclamation-circle fa-3x mb-3"></i>
+                <h3>No GI tagged products found</h3>
+                <p>We're currently updating our collection of GI tagged products. Please check back later.</p>
+                <a href="{{ url_for('products') }}" class="btn btn-primary mt-3">Browse All Products</a>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="gi-regions mt-5 py-4">
+            <h2 class="section-title">Famous GI Tagged Products of India</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h4 class="card-title">Darjeeling Tea</h4>
+                            <p class="card-text">Darjeeling tea is a tea from the Darjeeling district in West Bengal, India. It has a unique flavor profile and is often referred to as the "Champagne of Teas".</p>
+                            <p class="mb-0"><strong>Origin:</strong> Darjeeling, West Bengal</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h4 class="card-title">Banarasi Sarees</h4>
+                            <p class="card-text">Banarasi sarees are known for their gold and silver brocade or zari, fine silk, and opulent embroidery. They are among the finest sarees in India.</p>
+                            <p class="mb-0"><strong>Origin:</strong> Varanasi, Uttar Pradesh</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h4 class="card-title">Pashmina Shawls</h4>
+                            <p class="card-text">Pashmina refers to a fine type of wool. Its textiles are hand-spun and woven in Kashmir and Nepal, and made from fine cashmere fiber.</p>
+                            <p class="mb-0"><strong>Origin:</strong> Kashmir</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h4 class="card-title">Mysore Silk</h4>
+                            <p class="card-text">Mysore Silk is a prestigious silk brand produced by KSIC (Karnataka Silk Industries Corporation). It is known for its luster, smoothness, and luxurious feel.</p>
+                            <p class="mb-0"><strong>Origin:</strong> Mysore, Karnataka</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h4 class="card-title">Tirupati Laddu</h4>
+                            <p class="card-text">Tirupati Laddu is a ball-shaped sweet made of flour, ghee, sugar, cashew nuts, and raisins, offered as prasadam at the Tirumala Venkateswara Temple.</p>
+                            <p class="mb-0"><strong>Origin:</strong> Tirupati, Andhra Pradesh</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h4 class="card-title">Madhubani Paintings</h4>
+                            <p class="card-text">Madhubani painting is a style of folk painting practiced in the Mithila region of Bihar. It is characterized by geometric patterns and two-dimensional imagery.</p>
+                            <p class="mb-0"><strong>Origin:</strong> Mithila Region, Bihar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

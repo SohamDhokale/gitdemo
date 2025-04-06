@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation - AaplaBazaar{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
+            <h1>Thank You for Your Order!</h1>
+            <p class="lead">Your order has been placed successfully.</p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">Order Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Order Number:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                #{{ order.id }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Order Date:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ order.order_date.strftime('%d %B, %Y at %I:%M %p') }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Order Status:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                <span class="badge bg-success">{{ order.status }}</span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Tracking Number:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ order.tracking_number }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Estimated Delivery:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                {{ order.estimated_delivery.strftime('%d %B, %Y') if order.estimated_delivery else 'To be determined' }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <strong>Total Amount:</strong>
+                            </div>
+                            <div class="col-sm-8">
+                                <strong>₹{{ order.total_amount }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="mb-0">Items Ordered</h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order.items %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('product_detail', id=item.product.id) }}">{{ item.product.name }}</a>
+                                    </td>
+                                    <td class="text-center">{{ item.quantity }}</td>
+                                    <td class="text-end">₹{{ item.price * item.quantity }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="2" class="text-end">Total:</th>
+                                    <th class="text-end">₹{{ order.total_amount }}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="mb-0">Shipping Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ order.shipping_address }}</p>
+                        <p>{{ order.shipping_city }}, {{ order.shipping_state }} - {{ order.shipping_pincode }}</p>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('track_order', order_id=order.id) }}" class="btn btn-primary me-2">
+                        <i class="fas fa-truck me-2"></i> Track Order
+                    </a>
+                    <a href="{{ url_for('orders') }}" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-list me-2"></i> View All Orders
+                    </a>
+                    <a href="{{ url_for('products') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-shopping-bag me-2"></i> Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Your Cart - AaplaBazaar{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="section-title">Your Shopping Cart</h1>
+        
+        {% if cart_items %}
+        <div class="cart-container">
+            <div class="cart-items">
+                {% for item in cart_items %}
+                <div class="cart-item">
+                    <div class="cart-item-image">
+                        <a href="{{ url_for('product_detail', id=item.product.id) }}">
+                            <img src="{{ item.product.image_url1 }}" alt="{{ item.product.name }}">
+                        </a>
+                    </div>
+                    <div class="cart-item-details">
+                        <h3 class="cart-item-title">
+                            <a href="{{ url_for('product_detail', id=item.product.id) }}">{{ item.product.name }}</a>
+                        </h3>
+                        <div class="cart-item-price" data-price="{{ item.product.price }}">₹{{ item.product.price }}</div>
+                        <div class="cart-item-quantity">
+                            <form class="update-cart-form" action="{{ url_for('update_cart_item', item_id=item.id) }}" method="post">
+                                <div class="d-flex align-items-center">
+                                    <button type="button" class="quantity-btn quantity-decrement">-</button>
+                                    <input type="number" name="quantity" class="quantity-input" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}">
+                                    <button type="button" class="quantity-btn quantity-increment">+</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-primary ms-2">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <form class="remove-cart-form" action="{{ url_for('remove_from_cart', item_id=item.id) }}" method="post">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="cart-summary">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span class="cart-total-value">₹{{ total }}</span>
+                </div>
+                <button id="checkout-btn" class="btn btn-primary checkout-btn">Proceed to Checkout</button>
+                <a href="{{ url_for('products') }}" class="btn btn-outline-secondary w-100 mt-2">Continue Shopping</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-cart text-center py-5">
+            <i class="fas fa-shopping-cart fa-4x mb-4" style="color: #ccc;"></i>
+            <h2>Your Cart is Empty</h2>
+            <p class="mb-4">Looks like you haven't added anything to your cart yet.</p>
+            <a href="{{ url_for('products') }}" class="btn btn-primary">Start Shopping</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

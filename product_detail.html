@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - AaplaBazaar{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('products') }}">Products</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('products') }}?category={{ product.category }}">{{ product.category|capitalize }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+            </ol>
+        </nav>
+        
+        <div class="product-detail-container">
+            <!-- Product Gallery -->
+            <div class="product-gallery">
+                <div class="product-main-image">
+                    <img src="{{ product.image_url1 }}" alt="{{ product.name }}">
+                </div>
+                <div class="product-thumbnails">
+                    <div class="product-thumbnail active">
+                        <img src="{{ product.image_url1 }}" alt="{{ product.name }} - Image 1">
+                    </div>
+                    {% if product.image_url2 %}
+                    <div class="product-thumbnail">
+                        <img src="{{ product.image_url2 }}" alt="{{ product.name }} - Image 2">
+                    </div>
+                    {% endif %}
+                    {% if product.image_url3 %}
+                    <div class="product-thumbnail">
+                        <img src="{{ product.image_url3 }}" alt="{{ product.name }} - Image 3">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Product Info -->
+            <div class="product-info">
+                <h1 class="product-info-title">{{ product.name }}</h1>
+                
+                <div class="product-info-price">
+                    <span class="product-info-current-price">₹{{ product.price }}</span>
+                    {% if product.discount_price %}
+                    <span class="product-info-original-price">₹{{ product.discount_price }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="product-info-stock {% if product.stock > 10 %}in-stock{% elif product.stock > 0 %}low-stock{% else %}out-of-stock{% endif %}">
+                    {% if product.stock > 10 %}
+                    <i class="fas fa-check-circle"></i> In Stock
+                    {% elif product.stock > 0 %}
+                    <i class="fas fa-exclamation-circle"></i> Only {{ product.stock }} left
+                    {% else %}
+                    <i class="fas fa-times-circle"></i> Out of Stock
+                    {% endif %}
+                </div>
+                
+                <div class="product-info-description">
+                    <p>{{ product.description }}</p>
+                </div>
+                
+                {% if product.stock > 0 %}
+                <div class="product-info-quantity">
+                    <label for="quantity" class="me-3">Quantity:</label>
+                    <div class="quantity-control d-flex align-items-center">
+                        <button type="button" class="quantity-btn quantity-decrement">-</button>
+                        <input type="number" id="quantity" class="quantity-input" value="1" min="1" max="{{ product.stock }}">
+                        <button type="button" class="quantity-btn quantity-increment">+</button>
+                    </div>
+                </div>
+                
+                <div class="product-info-actions">
+                    {% if current_user.is_authenticated %}
+                    <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post" style="flex: 1;">
+                        <input type="hidden" name="quantity" id="cart-quantity" value="1">
+                        <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
+                    </form>
+                    
+                    <form class="add-to-wishlist-form" action="{{ url_for('add_to_wishlist', product_id=product.id) }}" method="post" style="width: auto;">
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="{% if product in current_user.wishlist_items|map(attribute='product')|list %}fas{% else %}far{% endif %} fa-heart"></i> Wishlist
+                        </button>
+                    </form>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-primary" style="flex: 1;">Add to Cart</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary">
+                        <i class="far fa-heart"></i> Wishlist
+                    </a>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    This product is currently out of stock. Please check back later.
+                </div>
+                <button class="btn btn-outline-primary" disabled>
+                    <i class="far fa-bell"></i> Notify Me When Available
+                </button>
+                {% endif %}
+                
+                <div class="product-info-meta">
+                    <p><strong>Category:</strong> <a href="{{ url_for('products') }}?category={{ product.category }}">{{ product.category|capitalize }}</a></p>
+                    {% if product.origin %}
+                    <p><strong>Origin:</strong> {{ product.origin }}</p>
+                    {% endif %}
+                </div>
+                
+                {% if product.is_gi_tagged %}
+                <div class="product-info-gi">
+                    <h4>
+                        <span class="gi-badge me-2">GI Tagged</span>
+                        Geographical Indication
+                    </h4>
+                    <p>{{ product.gi_tag_details }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Product Details Tabs -->
+        <div class="product-tabs mt-5">
+            <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">Description</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">Reviews ({{ reviews|length }})</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button" role="tab">Shipping & Returns</button>
+                </li>
+                {% if product.is_gi_tagged %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="gi-tab" data-bs-toggle="tab" data-bs-target="#gi" type="button" role="tab">GI Information</button>
+                </li>
+                {% endif %}
+            </ul>
+            <div class="tab-content p-4 border border-top-0 rounded-bottom" id="productTabsContent">
+                <div class="tab-pane fade show active" id="description" role="tabpanel">
+                    {{ product.description|safe }}
+                </div>
+                <div class="tab-pane fade" id="shipping" role="tabpanel">
+                    <h4>Shipping Policy</h4>
+                    <p>We offer free shipping on orders above ₹599. Standard delivery takes 3-7 business days depending on your location.</p>
+                    
+                    <h4>Return Policy</h4>
+                    <p>We accept returns within 7 days of delivery. The product must be unused and in its original packaging. Please contact our customer support team to initiate a return.</p>
+                </div>
+                {% if product.is_gi_tagged %}
+                <div class="tab-pane fade" id="gi" role="tabpanel">
+                    <h4>About Geographical Indication (GI) Tags</h4>
+                    <p>A Geographical Indication (GI) is a sign used on products that have a specific geographical origin and possess qualities or a reputation that are due to that origin.</p>
+                    
+                    <h4>{{ product.name }} - GI Information</h4>
+                    <p>{{ product.gi_tag_details }}</p>
+                    
+                    <p><strong>Origin:</strong> {{ product.origin }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Related Products -->
+        <div class="related-products mt-5">
+            <h2 class="section-title">Related Products</h2>
+            <div class="product-grid">
+                {% for product in related_products %}
+                <div class="product-card">
+                    <div class="product-image">
+                        <a href="{{ url_for('product_detail', id=product.id) }}">
+                            <img src="{{ product.image_url1 }}" alt="{{ product.name }}">
+                        </a>
+                        <div class="product-wishlist">
+                            {% if current_user.is_authenticated %}
+                            <form class="add-to-wishlist-form" action="{{ url_for('add_to_wishlist', product_id=product.id) }}" method="post" style="display: none;">
+                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                            </form>
+                            <button type="button" class="wishlist-btn" data-product-id="{{ product.id }}">
+                                {% if product in current_user.wishlist_items|map(attribute='product')|list %}
+                                <i class="fas fa-heart"></i>
+                                {% else %}
+                                <i class="far fa-heart"></i>
+                                {% endif %}
+                            </button>
+                            {% else %}
+                            <a href="{{ url_for('login') }}" class="wishlist-btn">
+                                <i class="far fa-heart"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="product-details">
+                        <div class="product-category">{{ product.category|capitalize }}</div>
+                        <h3 class="product-title">
+                            <a href="{{ url_for('product_detail', id=product.id) }}">{{ product.name }}</a>
+                        </h3>
+                        <div class="product-price">
+                            <span class="current-price">₹{{ product.price }}</span>
+                            {% if product.discount_price %}
+                            <span class="original-price">₹{{ product.discount_price }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-actions">
+                            {% if current_user.is_authenticated %}
+                            <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-primary add-to-cart">Add to Cart</button>
+                            </form>
+                            {% else %}
+                            <a href="{{ url_for('login') }}" class="btn btn-primary add-to-cart">Add to Cart</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sync the quantity input with the cart form
+        const quantityInput = document.getElementById('quantity');
+        const cartQuantityInput = document.getElementById('cart-quantity');
+        
+        if (quantityInput && cartQuantityInput) {
+            quantityInput.addEventListener('change', function() {
+                cartQuantityInput.value = this.value;
+            });
+            
+            // Also update when using the increment/decrement buttons
+            const decrementBtn = document.querySelector('.quantity-decrement');
+            const incrementBtn = document.querySelector('.quantity-increment');
+            
+            if (decrementBtn) {
+                decrementBtn.addEventListener('click', function() {
+                    cartQuantityInput.value = quantityInput.value;
+                });
+            }
+            
+            if (incrementBtn) {
+                incrementBtn.addEventListener('click', function() {
+                    cartQuantityInput.value = quantityInput.value;
+                });
+            }
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}
